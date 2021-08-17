@@ -11,12 +11,13 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="120dp"
+        android:layout_marginTop="32dp"
         android:layout_marginEnd="24dp"
-        android:text="This activity requires the LOCATION permission. Not granting it will not show a map below."
+        android:text="Location permission required to display a map image in GREEN below."
         android:textAlignment="center"
         android:textAllCaps="false"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -29,8 +30,7 @@
         android:text="Log in now"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/button_permission_retry"
-        app:layout_constraintStart_toStartOf="@+id/button_permission_retry"
-        app:layout_constraintTop_toBottomOf="@+id/button_permission_retry" />
+        app:layout_constraintStart_toStartOf="@+id/button_permission_retry" />
 
     <ImageView
         android:id="@+id/image_map"
@@ -40,13 +40,13 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="24dp"
         android:layout_marginBottom="16dp"
-        android:tint="#4CAF50"
         android:tintMode="multiply"
         app:layout_constraintBottom_toTopOf="@+id/button_permission_retry"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView"
-        app:srcCompat="@android:drawable/ic_menu_mapmode" />
+        app:srcCompat="@android:drawable/ic_menu_mapmode"
+        app:tint="#F44336" />
 
     <Button
         android:id="@+id/button_permission_retry"
@@ -55,8 +55,8 @@
         android:layout_marginStart="24dp"
         android:layout_marginEnd="24dp"
         android:text="Retry permission request"
+        app:layout_constraintBottom_toTopOf="@+id/button_login"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="579dp" />
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
