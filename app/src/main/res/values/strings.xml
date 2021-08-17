@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">auth0-runtime-permissions-poc</string>
+    <!-- Auth0 client values -->
+    <string name="com_auth0_domain">lbalmaceda.auth0.com</string>
+    <string name="com_auth0_client_id">vRjPRWi4q4K51q5MpRF4r35AivX8ks3J</string>
+    <string name="com_auth0_scheme">dsgpoc</string>
 </resources>

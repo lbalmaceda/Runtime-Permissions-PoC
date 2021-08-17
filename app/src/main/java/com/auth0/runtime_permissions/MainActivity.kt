@@ -9,6 +9,11 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker
+import com.auth0.android.Auth0
+import com.auth0.android.authentication.AuthenticationException
+import com.auth0.android.callback.Callback
+import com.auth0.android.provider.WebAuthProvider
+import com.auth0.android.result.Credentials
 import com.auth0.runtime_permissions.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -84,6 +89,26 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun launchLogin() {
-        TODO("Not yet implemented")
+        // Auth0 client of type 'Native' with Allowed Callback and Logout URLs of:
+        // 'dsgpoc://lbalmaceda.auth0.com/android/com.auth0.runtime_permissions/callback'
+        // and at least one Connection enabled.
+        WebAuthProvider.login(Auth0(this))
+            .withParameters(mapOf("prompt" to "login"))
+            .withScheme(getString(R.string.com_auth0_scheme))
+            .start(this, object : Callback<Credentials, AuthenticationException> {
+                override fun onFailure(error: AuthenticationException) {
+                    AlertDialog.Builder(this@MainActivity)
+                        .setTitle("Log in failed")
+                        .setMessage("[${error.getCode()}]: ${error.getDescription()}")
+                        .show()
+                }
+
+                override fun onSuccess(result: Credentials) {
+                    AlertDialog.Builder(this@MainActivity)
+                        .setTitle("Log in successful")
+                        .setMessage("Received access token [${result.accessToken}]")
+                        .show()
+                }
+            })
     }
 }
