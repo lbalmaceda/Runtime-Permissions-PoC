@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.auth0.runtime_permissions">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -20,7 +21,35 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity"></activity>
+        <activity android:name=".MainActivity" />
+        <activity
+            android:name=".auth.AuthActivity"
+            android:exported="false"
+            android:launchMode="singleTask" />
+        <activity
+            android:name=".auth.RedirectActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="@string/com_auth0_domain"
+                    android:pathPrefix="/android/callback"
+                    android:scheme="@string/com_auth0_scheme" />
+            </intent-filter>
+        </activity>
+
+        <!-- Remove Auth0 SDK's declared Activities -->
+
+        <activity
+            android:name="com.auth0.android.provider.AuthenticationActivity"
+            tools:node="remove" />
+        <activity
+            android:name="com.auth0.android.provider.RedirectActivity"
+            tools:node="remove" />
     </application>
 
 </manifest>
