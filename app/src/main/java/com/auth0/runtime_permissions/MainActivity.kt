@@ -1,7 +1,6 @@
 package com.auth0.runtime_permissions
 
 import android.Manifest
-import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
@@ -10,12 +9,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker
-import com.auth0.android.Auth0
-import com.auth0.android.authentication.AuthenticationException
-import com.auth0.android.callback.Callback
-import com.auth0.android.provider.WebAuthProvider
-import com.auth0.android.result.Credentials
-import com.auth0.runtime_permissions.auth.AuthActivity
+import com.auth0.runtime_permissions.auth.RequestUserAuthentication
 import com.auth0.runtime_permissions.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -23,6 +17,22 @@ class MainActivity : AppCompatActivity() {
     private val permissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { granted -> updatePermissionsUI(granted) }
+    private val authenticationLauncher = registerForActivityResult(
+        RequestUserAuthentication()
+    ) { result ->
+        result.first?.let {
+            AlertDialog.Builder(this)
+                .setTitle("Auth failed")
+                .setMessage("${it.getCode()} - ${it.getDescription()}")
+                .show()
+        }
+        result.second?.let {
+            AlertDialog.Builder(this)
+                .setTitle("Auth succeeded")
+                .setMessage(it.accessToken)
+                .show()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -91,7 +101,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun launchLogin() {
-        val intent = Intent(this, AuthActivity::class.java)
-        startActivity(intent)
+        authenticationLauncher.launch(Unit)
     }
 }

@@ -50,7 +50,7 @@ class AuthActivity : AppCompatActivity() {
         // Callback URI plus values from server: error, error_description, code
         if (intent.data == null) {
             // The browser was closed
-            finish()
+            finishWithError("a0.authentication_canceled")
             return
         }
 
@@ -59,13 +59,40 @@ class AuthActivity : AppCompatActivity() {
         error?.let {
             // Server failed with an error
             val errorDescription = values["error_description"]
-            Log.e(AuthActivity::class.java.simpleName, "Error: $it - $errorDescription")
-            finish()
+            finishWithError(error, errorDescription)
+            return
+        }
+        val state = values["state"]
+        if (transaction!!.state != state) {
+            // The state received doesn't match
+            finishWithError("a0.state_mismatch")
             return
         }
 
         // If there were no errors, continue
-        completeTransaction(values["state"]!!, values["code"]!!)
+        completeTransaction(values["code"]!!)
+    }
+
+    private fun finishWithError(errorCode: String, errorDescription: String? = null) {
+        val result = Intent()
+        result.putExtra("error_code", errorCode)
+        result.putExtra("error_description", errorDescription)
+        setResult(RESULT_OK, result)
+        transaction = null
+        finish()
+    }
+
+    private fun finishWithCredentials(credentials: Credentials) {
+        val result = Intent()
+        result.putExtra("id_token", credentials.idToken)
+        result.putExtra("access_token", credentials.accessToken)
+        result.putExtra("token_type", credentials.type)
+        result.putExtra("refresh_token", credentials.refreshToken)
+        result.putExtra("expires_at", credentials.expiresAt)
+        result.putExtra("scope", credentials.scope)
+        setResult(RESULT_OK, result)
+        transaction = null
+        finish()
     }
 
     private fun beginTransaction() {
@@ -82,14 +109,9 @@ class AuthActivity : AppCompatActivity() {
             .launchUrl(this, transaction!!.getAuthorizeUri(optionalParameters))
     }
 
-    private fun completeTransaction(state: String, authorizationCode: String) {
+    private fun completeTransaction(authorizationCode: String) {
         val domain = getString(R.string.com_auth0_domain)
         val clientId = getString(R.string.com_auth0_client_id)
-        if (transaction!!.state != state) {
-            Log.e(AuthActivity::class.java.simpleName, "Error: 'state' mismatch")
-            finish()
-            return
-        }
 
         val account = Auth0(clientId, domain).apply {
             networkingClient = DefaultClient(enableLogging = true)
@@ -102,17 +124,12 @@ class AuthActivity : AppCompatActivity() {
             )
             .start(object : Callback<Credentials, AuthenticationException> {
                 override fun onFailure(error: AuthenticationException) {
-                    Log.e(
-                        AuthActivity::class.java.simpleName,
-                        "Error: ${error.getCode()} - ${error.getDescription()}"
-                    )
-                    finish()
+                    finishWithError(error.getCode(), error.getDescription())
                 }
 
                 override fun onSuccess(result: Credentials) {
                     //TODO: ID token verification
-                    Log.e(AuthActivity::class.java.simpleName, "Success: ${result.accessToken}")
-                    finish()
+                    finishWithCredentials(result)
                 }
             })
     }
