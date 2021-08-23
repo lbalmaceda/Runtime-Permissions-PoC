@@ -1,9 +1,6 @@
 package com.auth0.runtime_permissions.auth
 
 import android.content.Intent
-import android.os.Bundle
-import android.os.PersistableBundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.browser.customtabs.CustomTabsIntent
 import com.auth0.android.Auth0
@@ -16,21 +13,24 @@ import com.auth0.runtime_permissions.R
 
 class AuthActivity : AppCompatActivity() {
 
-    //TODO: Keep this one safe, it's important!
     private var transaction: AuthTransaction? = null
 
-    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
-        super.onCreate(savedInstanceState, persistentState)
-        /*
-        * FIXME:
-        *  Parcelable is not enough, there's no 'savedInstanceState' after the Android OS terminates the app.
-         */
-        transaction = savedInstanceState?.getParcelable("tx")
+    private fun loadTransaction() {
+        val sp = getPreferences(MODE_PRIVATE)
+        val txJSON = sp.getString("authTransaction", "")
+        transaction = AuthTransaction.fromJSON(txJSON)
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        outState.putParcelable("tx", transaction)
-        super.onSaveInstanceState(outState)
+    private fun saveTransaction() {
+        val txJSON = transaction?.toJSON()
+        getPreferences(MODE_PRIVATE).edit()
+            .putString("authTransaction", txJSON)
+            .apply()
+    }
+
+    override fun onPause() {
+        saveTransaction()
+        super.onPause()
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -41,6 +41,7 @@ class AuthActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
+        loadTransaction()
         if (transaction == null) {
             beginTransaction()
             return
@@ -56,6 +57,7 @@ class AuthActivity : AppCompatActivity() {
         val values = expandQuery(intent.data!!.query)
         val error = values["error"]
         error?.let {
+            // Server failed with an error
             val errorDescription = values["error_description"]
             Log.e(AuthActivity::class.java.simpleName, "Error: $it - $errorDescription")
             finish()

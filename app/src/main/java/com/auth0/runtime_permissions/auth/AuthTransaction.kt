@@ -1,8 +1,7 @@
 package com.auth0.runtime_permissions.auth
 
 import android.net.Uri
-import android.os.Parcel
-import android.os.Parcelable
+import org.json.JSONObject
 
 class AuthTransaction(
     val issuer: String,
@@ -11,7 +10,7 @@ class AuthTransaction(
     val state: String = secureRandomString(),
     val nonce: String = secureRandomString(),
     val codeVerifier: String = secureRandomString()
-) : Parcelable {
+) {
 
     /**
      * Code Challenge: required for PKCE flow completion
@@ -47,35 +46,31 @@ class AuthTransaction(
         return builder.build()
     }
 
-    override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeString(issuer)
-        parcel.writeString(audience)
-        parcel.writeString(scheme)
-        parcel.writeString(state)
-        parcel.writeString(nonce)
-        parcel.writeString(codeVerifier)
+    fun toJSON(): String {
+        val tx = JSONObject()
+        tx.put("issuer", issuer)
+        tx.put("audience", audience)
+        tx.put("scheme", scheme)
+        tx.put("state", state)
+        tx.put("nonce", nonce)
+        tx.put("codeVerifier", codeVerifier)
+        return tx.toString()
     }
 
-    override fun describeContents(): Int {
-        return 0
-    }
-
-    constructor(parcel: Parcel) : this(
-        parcel.readString()!!,
-        parcel.readString()!!,
-        parcel.readString()!!,
-        parcel.readString()!!,
-        parcel.readString()!!,
-        parcel.readString()!!
-    )
-
-    companion object CREATOR : Parcelable.Creator<AuthTransaction> {
-        override fun createFromParcel(parcel: Parcel): AuthTransaction {
-            return AuthTransaction(parcel)
-        }
-
-        override fun newArray(size: Int): Array<AuthTransaction?> {
-            return arrayOfNulls(size)
+    companion object {
+        fun fromJSON(json: String?): AuthTransaction? {
+            if (json.isNullOrEmpty()) {
+                return null
+            }
+            val tx = JSONObject(json)
+            return AuthTransaction(
+                tx.getString("issuer"),
+                tx.getString("audience"),
+                tx.getString("scheme"),
+                tx.getString("state"),
+                tx.getString("nonce"),
+                tx.getString("codeVerifier"),
+            )
         }
     }
 
