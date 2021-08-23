@@ -34,6 +34,7 @@ class RequestUserAuthentication :
             return Pair(error, null)
         }
 
+        // TODO: Use shared constants
         val idToken = intent.getStringExtra("id_token")!!
         val accessToken = intent.getStringExtra("access_token")!!
         val tokenType = intent.getStringExtra("token_type")!!

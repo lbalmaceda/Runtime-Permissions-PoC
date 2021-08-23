@@ -20,6 +20,7 @@ class MainActivity : AppCompatActivity() {
     private val authenticationLauncher = registerForActivityResult(
         RequestUserAuthentication()
     ) { result ->
+        // TODO: Handle the result as required
         result.first?.let {
             AlertDialog.Builder(this)
                 .setTitle("Auth failed")
@@ -47,6 +48,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        // Check for required permissions every time the activity is resumed
         requestPermissions()
     }
 

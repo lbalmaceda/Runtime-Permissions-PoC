@@ -128,7 +128,11 @@ class AuthActivity : AppCompatActivity() {
                 }
 
                 override fun onSuccess(result: Credentials) {
-                    //TODO: ID token verification
+                    /*
+                    TODO: Perform ID token verification
+                    This is required to ensure that the ID token is meant for us.
+                    See SDK's implementation for reference at https://github.com/auth0/Auth0.Android/blob/main/auth0/src/main/java/com/auth0/android/provider/IdTokenVerifier.java
+                     */
                     finishWithCredentials(result)
                 }
             })

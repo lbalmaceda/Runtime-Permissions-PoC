@@ -63,6 +63,7 @@ class AuthTransaction(
                 return null
             }
             val tx = JSONObject(json)
+            // TODO: Use shared constants
             return AuthTransaction(
                 tx.getString("issuer"),
                 tx.getString("audience"),

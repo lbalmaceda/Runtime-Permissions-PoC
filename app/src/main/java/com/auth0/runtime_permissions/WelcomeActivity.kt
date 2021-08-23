@@ -12,6 +12,7 @@ class WelcomeActivity : AppCompatActivity() {
 
         val binding = ActivityWelcomeBinding.inflate(layoutInflater)
         binding.buttonLogin.setOnClickListener {
+            // Users could sign in here or skip that and "log in as guests"
             Toast.makeText(this, "Not implemented", Toast.LENGTH_SHORT).show()
         }
         binding.buttonGuest.setOnClickListener {
